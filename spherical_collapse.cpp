@@ -22,11 +22,16 @@ using std::setw;
 
 #include <cmath>
 
+#include <string>
+#include <sstream>
+
 #include <cstdlib>	
 using std::exit;
 
 #include <vector>
 using std::vector;
+
+#include "utility.hpp"
 
 #include "shell.hpp"
 
@@ -35,7 +40,7 @@ mtrand Rand;
 
 vector<shell> gas; // gas = vector of particles
 
-const int nshells = 100;  // Number of shell sot simulate
+const int nshells = 1000;  // Number of shell sot simulate
 const double force_softening_alpha = 0.05; // units of distance
 const double force_softening_alpha2 = force_softening_alpha*force_softening_alpha;
 
@@ -75,10 +80,6 @@ void display()
 }
 #endif // USE_OPEN_GL	
 
-inline double heaviside(double x){
-  return 1. ? x > 0. : 0.;
-}
-
 // Background mass interior to r at time t in matter domination
 double get_mass_interior_bg(double t, double r)
 {
@@ -109,10 +110,36 @@ double get_mass_interior_to_r(double r)
   return mass_interior;
 }
 
+double get_density(double r, double dr)
+{
+  double r1 = r - dr/2;
+  double r2 = r + dr/2;
+
+  double mass_interior1 = get_mass_interior_to_r(r1);
+  double mass_interior2 = get_mass_interior_to_r(r2);
+
+  return (mass_interior2-mass_interior1)/dr/(4.*PI*r*r);
+}
+
 // Overdensity interior to shell n at time t
 inline double get_delta_interior(double t, size_t n)
 {
   return get_mass_interior(n)/get_mass_interior_bg(t, gas[n].r) - 1.;
+}
+
+inline double get_shell_energy(size_t n)
+{
+  return 0.5*gas[n].vr*gas[n].vr + gas[n].l*gas[n].l/(gas[n].r*gas[n].r) - get_mass_interior(n)/gas[n].r;
+}
+
+double get_total_energy()
+{
+  double total_energy;
+  total_energy = 0.;
+  for (size_t i = 0; i < nshells; i++)
+    total_energy += get_shell_energy(i);
+
+  return total_energy;
 }
 
 void initialize_gas(void)
@@ -213,8 +240,18 @@ double get_time_step()
   }
   return std::min(std::max(c_dyn*smallest_t_dyn, dt_min), dt_max);
 }
-/*
-*/
+
+double get_r_max()
+{
+  double largest_r;
+  largest_r = gas[0].r;
+  for(size_t i = 0; i < nshells; ++i)
+  {
+    if (gas[i].r > largest_r)
+      largest_r = gas[i].r;
+  }
+  return largest_r; 
+}
 
 void verlet_update()
 {
@@ -353,6 +390,7 @@ void output_shell_evolution()
     cout << gas[i].r << "    " << gas[i].vr << "    " << get_delta_interior(t, i) << "    " << get_mass_interior(i) << "    ";
 
   }
+  //cout << get_total_energy() << "    ";
   double t_dyn;
   for (size_t m = 0; m < r_out.size(); m++)
   {
@@ -368,6 +406,18 @@ void output_shell_evolution()
   cout << endl;
 }
 
+void output_radial_profile(const char * file_name)
+{
+    double dr;
+    int nbins;
+    nbins = 10;
+    dr = get_r_max()/nbins;
+    ofstream radial_profile (file_name);
+    for (size_t i = 0; i < nbins; i++)
+      radial_profile << dr*(i+1) << "    " << get_density(dr*(i+1), dr) << endl;  
+    radial_profile.close();
+}
+
 void animate(int)
 {
     //adaptive_leapfrog_update();
@@ -380,10 +430,19 @@ void animate(int)
 
     if ((sim_time%100 == 0)) output_shell_evolution();
 
+    if ((sim_time%100000 == 0)) 
+    {
+      std::string out_name;
+      std::ostringstream ss;
+      ss << floor(gas[0].t); 
+      out_name = "radial_profile_"+ss.str()+".dat"; 
+      output_radial_profile(out_name.c_str());
+    } 
+
 	sim_time++;		// Increment simulation time
 
 	// Exit if sim_time_max exceeded
-	if (sim_time*dt > sim_time_max) exit(0);
+	//if (gas[0].t > sim_time_max) exit(0);
 	//if (sim_time > 100000) exit(0);
 }
 
@@ -408,7 +467,7 @@ int main(int argc, char **argv)
 #endif // USE_OPEN_GL	
 
 #ifndef USE_OPEN_GL
-    while(true)
+    while(gas[0].t < sim_time_max)
       animate(0);
 #endif// USE_OPEN_GL
 }

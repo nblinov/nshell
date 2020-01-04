@@ -1,5 +1,4 @@
-#ifndef SHELL_HPP
-#define SHELL_HPP
+#pragma once
 
 #include <iostream>
 using std::ostream;
@@ -54,5 +53,3 @@ public:
 		return os;
 	}
 };
-
-#endif // SHELL_HPP
