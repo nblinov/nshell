@@ -3,6 +3,9 @@
 #include <iostream>
 using std::ostream;
 
+#include <iomanip>
+using std::setw;
+
 #include <cmath>
 using std::sqrt;
 

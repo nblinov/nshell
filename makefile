@@ -1,10 +1,10 @@
 CC=g++
-CFLAGS=-O3 #-fopenmp #-floop-parallelize-all -ftree-parallelize-loops=4 ##-fopenmp 
+CFLAGS= -O3 #-fopenmp #-floop-parallelize-all -ftree-parallelize-loops=4 ##-fopenmp 
 DEFINES = -DUSE_OPEN_GL
 ## for Mac OS X
 #GLFLAGS = -framework OpenGL -framework GLUT -lobjc
 ## For Linux
-LDFLAGS = -L/usr/X11R6/lib
+LDFLAGS = -L/usr/X11R6/lib -lm
 GLFLAGS = -lglut -lGLU -lGL -lXmu -lXi -lXext -lX11 -lm 
 
 all: solar_openGL shell_clump spherical_collapse
@@ -23,3 +23,6 @@ spherical_collapse: spherical_collapse.cpp shell.hpp
 
 one_shell: one_shell.cpp shell.hpp
 	$(CC) -o one_shell one_shell.cpp $(CFLAGS) $(LDFLAGS)  $(GLFLAGS)
+
+radial_collapse: radial_collapse.cpp shell.hpp nbody_system.hpp integrator.hpp
+	$(CC) -o radial_collapse radial_collapse.cpp $(CFLAGS) $(LDFLAGS) 
