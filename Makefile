@@ -26,3 +26,9 @@ one_shell: one_shell.cpp shell.hpp
 
 radial_collapse: radial_collapse.cpp shell.hpp nbody_system.hpp integrator.hpp
 	$(CC) -o radial_collapse radial_collapse.cpp $(CFLAGS) $(LDFLAGS) 
+
+self_similar_collapse: self_similar_collapse.cpp shell.hpp nbody_system.hpp integrator.hpp
+	$(CC) -o self_similar_collapse self_similar_collapse.cpp $(CFLAGS) $(LDFLAGS) 
+
+two_shell: two_shell.cpp shell.hpp nbody_system.hpp integrator.hpp
+	$(CC) -o two_shell two_shell.cpp $(CFLAGS) $(LDFLAGS) 
