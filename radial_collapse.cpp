@@ -15,9 +15,9 @@ using std::exit;
 #include <vector>
 using std::vector;
 
-#include "shell.hpp"
-#include "nbody_system.hpp"
-#include "integrator.hpp"
+#include "src/shell.hpp"
+#include "src/nbody_system.hpp"
+#include "src/integrator.hpp"
 
 int sim_steps = 0;                  // Integral simulation time. Real time given by dt*sim_time
 const double sim_time_max = 2000.;  // Length of the simulation

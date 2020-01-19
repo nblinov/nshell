@@ -7,8 +7,24 @@ DEFINES = -DUSE_OPEN_GL
 LDFLAGS = -L/usr/X11R6/lib -lm
 GLFLAGS = -lglut -lGLU -lGL -lXmu -lXi -lXext -lX11 -lm 
 
-all: solar_openGL shell_clump spherical_collapse
+SRC=src
 
+
+radial_collapse: radial_collapse.cpp $(SRC)/shell.hpp $(SRC)/nbody_system.hpp $(SRC)/integrator.hpp
+	$(CC) -o radial_collapse radial_collapse.cpp $(CFLAGS) $(LDFLAGS) 
+
+self_similar_collapse: self_similar_collapse.cpp $(SRC)/shell.hpp $(SRC)/nbody_system.hpp $(SRC)/integrator.hpp
+	$(CC) -o self_similar_collapse self_similar_collapse.cpp $(CFLAGS) $(LDFLAGS) 
+
+two_shell: two_shell.cpp $(SRC)/shell.hpp $(SRC)/nbody_system.hpp $(SRC)/integrator.hpp
+	$(CC) -o two_shell two_shell.cpp $(CFLAGS) $(LDFLAGS) 
+
+clean:
+	rm -f radial_collapse
+	rm -f self_similar_collapse
+	rm -f two_shell
+############################################################
+# OLD
 solar_openGL: solar_openGL.cpp particle.hpp vec2.hpp
 	$(CC) -o solar_openGL solar_openGL.cpp $(CFLAGS) $(DEFINES) $(LDFLAGS) $(GLFLAGS)
 
@@ -24,11 +40,3 @@ spherical_collapse: spherical_collapse.cpp shell.hpp
 one_shell: one_shell.cpp shell.hpp
 	$(CC) -o one_shell one_shell.cpp $(CFLAGS) $(LDFLAGS)  $(GLFLAGS)
 
-radial_collapse: radial_collapse.cpp shell.hpp nbody_system.hpp integrator.hpp
-	$(CC) -o radial_collapse radial_collapse.cpp $(CFLAGS) $(LDFLAGS) 
-
-self_similar_collapse: self_similar_collapse.cpp shell.hpp nbody_system.hpp integrator.hpp
-	$(CC) -o self_similar_collapse self_similar_collapse.cpp $(CFLAGS) $(LDFLAGS) 
-
-two_shell: two_shell.cpp shell.hpp nbody_system.hpp integrator.hpp
-	$(CC) -o two_shell two_shell.cpp $(CFLAGS) $(LDFLAGS) 

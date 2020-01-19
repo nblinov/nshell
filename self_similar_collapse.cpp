@@ -19,9 +19,9 @@ using std::vector;
 #include <sstream>
 
 
-#include "shell.hpp"
-#include "nbody_system.hpp"
-#include "integrator.hpp"
+#include "src/shell.hpp"
+#include "src/nbody_system.hpp"
+#include "src/integrator.hpp"
 
 // Simulation parameters
 int sim_steps = 0;                  // Integral simulation time. Real time given by dt*sim_time
@@ -47,7 +47,7 @@ vector<double> t_ta;  // Turn-around times for the above
 
 // This function sets up the initial conditions
 void initialize_gas(nbody_system &gas)
-{
+
   double m;
   double ri;
   double vri;
@@ -64,20 +64,6 @@ void initialize_gas(nbody_system &gas)
     double mass_interior;
     double delta;
 
-	for(size_t i = 0; i < nshells; i++){
-      mass_interior = (i+1)*m;
-      delta = delta_at_r0/pow(i+1.,epsilon);
-      
-      // initial shell radius
-      ri = pow((9./2.)*ti*ti*mass_interior/(1.+delta),1./3.); 
-      // initial shell radial velocity
-      vri = (2./3.)*(ri/ti);
-      // conserved shell angular momentum
-      l = sqrt(alpha*2.*ri*mass_interior*delta);
-
-      gas[i] = shell(m, ri, vri, l, ti);
-      gas.shell_order[i] = i;
-	}
 
     gas.output_radial_profile("output/initial_radial_profile.dat");
 
