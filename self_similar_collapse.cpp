@@ -46,7 +46,7 @@ vector<double> t_ta;  // Turn-around times for the above
 
 
 // This function sets up the initial conditions
-void initialize_gas(nbody_system &gas)
+void initialize_gas(nbody_system &gas){
 
   double m;
   double ri;
