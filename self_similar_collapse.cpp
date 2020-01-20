@@ -125,7 +125,6 @@ void output_shell_evolution(nbody_system& gas, integrator& stepper)
     i = r_out[m];
     t = gas[i].t/t_ta[m];
     cout << t << "    " << gas[i].r/r_ta[m] << "    " << gas[i].vr << "    " << gas.get_delta_interior(t, i) << "    " << gas.get_mass_interior(i) << "    ";
-    //cout << gas[i].r << "    " << gas[i].vr << "    " << gas.get_delta_interior(t, i) << "    " << gas.get_mass_interior(i) << "    ";
   }
   double t_dyn;
   for (size_t m = 0; m < r_out.size(); m++)
@@ -149,14 +148,15 @@ int main(int argc, char **argv)
 	initialize_gas(gas);
 
     // Choose the integrator
-    //leapfrog stepper(gas, ti, dt); 
-    adaptive_leapfrog stepper(gas, ti, dt); 
+    leapfrog stepper(gas, ti, dt); 
+    //adaptive_leapfrog stepper(gas, ti, dt); 
 
     // Run the simulation and print output
     while(stepper.t < sim_time_max)
     {
         stepper.update();
 
+        
         // Output evolution for a few shells every few steps
         if ((sim_steps%100 == 0)) output_shell_evolution(gas, stepper);
 

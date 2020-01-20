@@ -1,8 +1,5 @@
 /*
- * In this example we evaluate the self-similar collapse of a perturbation with initial profile delta~(M/M_0)^-epsilon 
- * during matter domination. This is the case studied by Fillmore and Goldreich (1984)
- * The initial radial velocity of the shells is given by vr = H*r
- * This turn-around point (radius and time) agree with those estimated based on analytics for these same initial conditions
+ * In this example we look at the evolution of two shells 
  */
 #include <iostream>
 using std::cout;
@@ -139,8 +136,10 @@ int main(int argc, char **argv)
 	initialize_gas(gas);
 
     // Choose the integrator
-    leapfrog stepper(gas, ti, dt); 
-    //adaptive_leapfrog stepper(gas, ti, dt); 
+    //leapfrog stepper(gas, ti, dt); 
+    adaptive_leapfrog stepper(gas, ti, dt); 
+    // This one is not working yet
+    //reversible_adaptive_leapfrog stepper(gas, ti, dt); 
 
     // Run the simulation and print output
     while(stepper.t < sim_time_max)
