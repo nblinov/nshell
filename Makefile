@@ -13,6 +13,9 @@ SRC=src
 radial_collapse: radial_collapse.cpp $(SRC)/shell.hpp $(SRC)/nbody_system.hpp $(SRC)/integrator.hpp
 	$(CC) -o radial_collapse radial_collapse.cpp $(CFLAGS) $(LDFLAGS) 
 
+shell_collapse_emd: shell_collapse_emd.cpp $(SRC)/shell.hpp $(SRC)/nbody_system.hpp $(SRC)/nbody_system_emd.hpp $(SRC)/integrator.hpp
+	$(CC) -o shell_collapse_emd shell_collapse_emd.cpp $(CFLAGS) $(LDFLAGS)
+
 self_similar_collapse: self_similar_collapse.cpp $(SRC)/shell.hpp $(SRC)/nbody_system.hpp $(SRC)/integrator.hpp
 	$(CC) -o self_similar_collapse self_similar_collapse.cpp $(CFLAGS) $(LDFLAGS) 
 

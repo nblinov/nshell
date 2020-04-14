@@ -59,7 +59,7 @@ class nbody_system
     }
 
     // Computes the acceleration and updates the dynamical time for the shell n
-    double compute_acceleration(size_t n)
+    virtual double compute_acceleration(size_t n)
     {
         double a = 0.;
         double t, r;
@@ -77,7 +77,7 @@ class nbody_system
     }
 
     // Background density at time t in matter domination
-    double get_density_bg(double t)
+    virtual double get_density_bg(double t)
     {
       return 1./(6.*PI*t*t);
     }
@@ -96,7 +96,7 @@ class nbody_system
     }
 
     // Mass interior to radius r
-    double get_mass_interior_to_r(double r)
+    virtual double get_mass_interior_to_r(double r)
     {
       double mass_interior = gas[0].mass; // Add a point mass at r = 0
       double rm, rp; // Shell boundaries
