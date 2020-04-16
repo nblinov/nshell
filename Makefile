@@ -4,7 +4,7 @@ DEFINES = -DUSE_OPEN_GL
 ## for Mac OS X
 #GLFLAGS = -framework OpenGL -framework GLUT -lobjc
 ## For Linux
-LDFLAGS = -L/usr/X11R6/lib -lm
+LDFLAGS = -L/usr/X11R6/lib -lm #-pg
 GLFLAGS = -lglut -lGLU -lGL -lXmu -lXi -lXext -lX11 -lm 
 
 SRC=src
@@ -26,6 +26,7 @@ clean:
 	rm -f radial_collapse
 	rm -f self_similar_collapse
 	rm -f two_shell
+	rm -f shell_collapse_emd
 ############################################################
 # OLD
 solar_openGL: solar_openGL.cpp particle.hpp vec2.hpp

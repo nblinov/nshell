@@ -131,7 +131,20 @@ int main(int argc, char **argv)
     while(stepper.t < sim_time_max)
     {
         stepper.update();
-        if ((sim_steps%100 == 0)) output_shell_evolution(gas);
+
+        // Output a few individual shell properties
+        if ((sim_steps%200 == 0)) output_shell_evolution(gas);
         sim_steps++;
+
+        // Output binned density profile of the whole system
+        if ((sim_steps%100000 == 0)) 
+        {
+          std::string out_name;
+          std::ostringstream ss;
+          ss << floor(stepper.t); 
+          out_name = "output/radial_profile_"+ss.str()+".dat"; 
+          gas.output_radial_profile(out_name.c_str());
+        }
+
     }
 }

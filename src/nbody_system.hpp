@@ -83,7 +83,7 @@ class nbody_system
     }
 
     // Background mass interior to r
-    double get_mass_interior_bg(double t, double r)
+    virtual double get_mass_interior_bg(double t, double r)
     {
       return (4.*PI/3.)*pow(r,3.)*get_density_bg(t); //(2./9.)*pow(r,3)/pow(t,2);
     }
@@ -180,7 +180,7 @@ class nbody_system
       return largest_r; 
     }
 
-    void output_radial_profile(const char * file_name)
+    virtual void output_radial_profile(const char * file_name)
     {
         double r, dr;
         int nbins;
