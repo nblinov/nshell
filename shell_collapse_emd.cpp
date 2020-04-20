@@ -27,7 +27,6 @@ const double epsilon = 0.5; // The initial perturbation has profile delta ~ (M/M
 const double delta_avg_init = 1e-1; // Initial average overdensity of the whole shell config (out to radius rmax)
 const double Mtot = 1.; // Arbitrary normalization of shell masses
 const double rmax = 1.; // Arbitrary normalization of distances
-const double Mtot_interior = Mtot*(nshells-1.)/nshells;
 
 // Infer start time from initial overdensity
 const double dt = 0.00005; // Initial stepsize (may be modified in the integrator)
