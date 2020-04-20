@@ -107,7 +107,7 @@ class nbody_system_emd : public nbody_system
         double t, r, dr;
         int nbins;
         nbins = 20;
-        dr = 1.1*get_r_max()/nbins;
+        dr = get_r_max()/nbins;
         t = gas[0].t;
         ofstream radial_profile (file_name);
         for (size_t i = 0; i < nbins; i++)
@@ -119,6 +119,4 @@ class nbody_system_emd : public nbody_system
         }
         radial_profile.close();
     }
-
-
 };
