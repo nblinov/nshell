@@ -141,6 +141,48 @@ class nbody_system
       return (mass_interior2-mass_interior1)/dr/(4.*PI*r*r);
     }
 
+    // Compute average radial shell velocity in radial bin centered at r of width dr
+    double get_velocity(double r, double dr)
+    {
+      double r1 = r - dr/2;
+      double r2 = r + dr/2;
+
+      size_t nshells_in_bin = 0;
+      double sum = 0.;
+
+      
+      for (size_t i = 0; i < gas.size(); ++i)
+      {
+        if (gas[i].r > r1 and gas[i].r <= r2)
+        {
+          nshells_in_bin++;
+          sum += gas[i].vr;
+        }
+      }
+      return sum/nshells_in_bin;
+    }
+
+    // Compute average radial shell velocity squared in radial bin centered at r of width dr
+    double get_velocity_squared(double r, double dr)
+    {
+      double r1 = r - dr/2;
+      double r2 = r + dr/2;
+
+      size_t nshells_in_bin = 0;
+      double sum = 0.;
+
+      
+      for (size_t i = 0; i < gas.size(); ++i)
+      {
+        if (gas[i].r > r1 and gas[i].r <= r2)
+        {
+          nshells_in_bin++;
+          sum += gas[i].vr*gas[i].vr;
+        }
+      }
+      return sum/nshells_in_bin;
+    }
+
     // Overdensity interior to shell n at time t
     inline double get_delta_interior(double t, size_t n)
     {

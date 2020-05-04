@@ -77,6 +77,7 @@ class leapfrog : public integrator
 
             // Now that all positions have been updated, compute new accelerations, velocities
             //#pragma omp parallel for default(none) shared(gas, shells_to_update, dt)
+            #pragma omp parallel for
             for (size_t i = 0; i < shells_to_update.size(); ++i)
             {
                   size_t n = shells_to_update[i];

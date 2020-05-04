@@ -20,7 +20,7 @@ using std::vector;
 #include "src/integrator.hpp"
 
 int sim_steps = 0;                  // Integral simulation time. Real time given by dt*sim_time
-const int nshells = 1000;  // Number of shell sot simulate
+const int nshells = 100;  // Number of shell sot simulate
 
 
 const double epsilon = 0.5; // The initial perturbation has profile delta ~ (M/M_0)^-epsilon
@@ -30,10 +30,10 @@ const double rmax = 1.; // Arbitrary normalization of distances
 
 // Infer start time from initial overdensity
 const double dt = 0.00005; // Initial stepsize (may be modified in the integrator)
-const double tau_emd_over_ti = 10.;
+const double tau_emd_over_ti = 100.;
 const double ti = sqrt((2./9.) * (1.+delta_avg_init) * (1. + 1./sqrt(tau_emd_over_ti)) * exp(-1./tau_emd_over_ti)); 
 const double tau_emd = tau_emd_over_ti*ti; // lifetime of the field responsible for EMD 
-const double sim_time_max = 10.*tau_emd;  // Length of the simulation
+const double sim_time_max = 50.*tau_emd;  // Length of the simulation
 const double stable_frac = 0.0001; // fraction of DM that does NOT decay at the end of EMD
 
 vector<double> r_avg; // Radii for which to print out 1+delta(r)
@@ -135,7 +135,8 @@ int main(int argc, char **argv)
         {
           std::string out_name;
           std::ostringstream ss;
-          ss << floor(stepper.t); 
+          //ss << floor(stepper.t); 
+          ss << round(100.*gas[0].t/tau_emd)/100.;
           out_name = "output/radial_profile_"+ss.str()+".dat"; 
           gas.output_radial_profile(out_name.c_str());
         }

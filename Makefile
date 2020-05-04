@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS= -O3 #-fopenmp #-floop-parallelize-all -ftree-parallelize-loops=4 ##-fopenmp 
+CFLAGS= -O3 -fopenmp #-floop-parallelize-all -ftree-parallelize-loops=4 ##-fopenmp 
 DEFINES = -DUSE_OPEN_GL
 ## for Mac OS X
 #GLFLAGS = -framework OpenGL -framework GLUT -lobjc
