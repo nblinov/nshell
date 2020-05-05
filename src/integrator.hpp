@@ -103,7 +103,7 @@ class adaptive_leapfrog : public integrator
         // Initialize with the system of particles only
         adaptive_leapfrog(nbody_system &gas_) : integrator(gas_) { initialize_timestep(); }; 
         // Initialize with system of particles, initial time and initial timestep
-        adaptive_leapfrog(nbody_system &gas_, const double t_, const double dt_) : integrator(gas_, t_, dt_), c_dyn(0.01), dt_min(1e-5), dt_max(1e-1) { initialize_timestep(); }; 
+        adaptive_leapfrog(nbody_system &gas_, const double t_, const double dt_) : integrator(gas_, t_, dt_), c_dyn(1e-3), dt_min(1e-5), dt_max(1e-1) { initialize_timestep(); }; 
 
         double get_time_step()
         {
@@ -141,7 +141,7 @@ class adaptive_leapfrog : public integrator
             // Keeps track which shells to update (and therefore which to skip)
             vector<size_t> shells_to_update;
 
-            #pragma omp parallel for
+            //#pragma omp parallel for
             for (size_t n = 0; n < gas.size(); ++n)
             {
                 // Time-step takes us to negative r 

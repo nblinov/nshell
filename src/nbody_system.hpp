@@ -159,7 +159,10 @@ class nbody_system
           sum += gas[i].vr;
         }
       }
-      return sum/nshells_in_bin;
+      if (nshells_in_bin > 0)
+        return sum/nshells_in_bin;
+      else
+        return 0.;
     }
 
     // Compute average radial shell velocity squared in radial bin centered at r of width dr
@@ -180,7 +183,10 @@ class nbody_system
           sum += gas[i].vr*gas[i].vr;
         }
       }
-      return sum/nshells_in_bin;
+      if (nshells_in_bin > 0)
+        return sum/nshells_in_bin;
+      else
+        return 0.;
     }
 
     // Overdensity interior to shell n at time t

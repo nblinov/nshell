@@ -15,12 +15,14 @@ using std::exit;
 #include <vector>
 using std::vector;
 
+#include <sstream>
+
 #include "src/shell.hpp"
 #include "src/nbody_system_emd.hpp"
 #include "src/integrator.hpp"
 
 int sim_steps = 0;                  // Integral simulation time. Real time given by dt*sim_time
-const int nshells = 100;  // Number of shell sot simulate
+const int nshells = 10000;  // Number of shell sot simulate
 
 
 const double epsilon = 0.5; // The initial perturbation has profile delta ~ (M/M_0)^-epsilon
@@ -120,7 +122,8 @@ int main(int argc, char **argv)
 	initialize_gas(gas);
 
     // Choose the integrator
-    leapfrog stepper(gas, ti, dt); 
+    //leapfrog stepper(gas, ti, dt); 
+    adaptive_leapfrog stepper(gas, ti, dt); 
 
     // Run the simulation and print output
     while(stepper.t < sim_time_max)
@@ -131,13 +134,14 @@ int main(int argc, char **argv)
         if ((sim_steps%200 == 0)) output_shell_evolution(gas);
 
         // Output binned density profile of the whole system
-        if ((sim_steps%100000 == 0)) 
+        //if ((sim_steps%100000 == 0)) 
+        if ((sim_steps%1000 == 0)) 
         {
           std::string out_name;
           std::ostringstream ss;
           //ss << floor(stepper.t); 
           ss << round(100.*gas[0].t/tau_emd)/100.;
-          out_name = "output/radial_profile_"+ss.str()+".dat"; 
+          out_name = "output_adaptive_10k/radial_profile_"+ss.str()+".dat"; 
           gas.output_radial_profile(out_name.c_str());
         }
 
