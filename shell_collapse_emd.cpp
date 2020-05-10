@@ -22,10 +22,14 @@ using std::vector;
 #include "src/integrator.hpp"
 
 int sim_steps = 0;                  // Integral simulation time. Real time given by dt*sim_time
-const int nshells = 10000;  // Number of shell sot simulate
+const int nshells = 100;  // Number of shell sot simulate
 
 
-const double epsilon = 0.5; // The initial perturbation has profile delta ~ (M/M_0)^-epsilon
+double epsilon = 0.5; // The initial perturbation has profile delta ~ (M/M_0)^-epsilon
+
+// Parameter that specifies angular momentum of the shells following https://arxiv.org/pdf/astro-ph/0008217.pdf
+double alpha = 0.01;  // if alpha < 1, then IC is such that shell is bound
+
 const double delta_avg_init = 1e-1; // Initial average overdensity of the whole shell config (out to radius rmax)
 const double Mtot = 1.; // Arbitrary normalization of shell masses
 const double rmax = 1.; // Arbitrary normalization of distances
@@ -55,7 +59,6 @@ void initialize_gas(nbody_system &gas)
     m = Mtot/(nshells);
 
     // Initializing following https://arxiv.org/pdf/astro-ph/0008217.pdf
-    double alpha = 0.01;  // if alpha < 1, then IC is such that shell is bound
     double mass_interior;
     double delta;
 
@@ -74,20 +77,13 @@ void initialize_gas(nbody_system &gas)
       gas[i] = shell(m, ri, vri, l, ti);
 
 	}
-    gas.output_radial_profile("output/radial_profile_0.dat");
-
-    //cout << "At ti, mass interior to rmax, bg = " << ti << "\t" << get_mass_interior_to_r(rmax)/get_mass_interior_bg(ti, rmax) << endl;
-	cout << "# Simulating " << gas.size() << " shells..." << endl;
 
     // Which shells to print out to standard output via output_shell_evolution below
     r_out.push_back(1);
     r_out.push_back(nshells/2);
     r_out.push_back(nshells-1);
 
-    // Some sanity checks
-    cout << "# Max radius = " << gas[nshells-1].r << "; M(nshells) = " << gas.get_mass_interior(nshells-1) << endl;
-    cout << "# Average overdensity = " << gas.get_delta_interior(ti, nshells-1) << "; should be = " << delta_avg_init << endl;
-}
+    }
 
 void output_shell_evolution(nbody_system &gas)
 {
@@ -117,9 +113,39 @@ void output_shell_evolution(nbody_system &gas)
 
 int main(int argc, char **argv)
 {
+
+    if (argc < 3){
+      cout << "Need three arguments:  output directory, initial profile slope epsilon and angular momentum parameter alpha!" << endl;
+      exit(0);
+    }
+
+    std::string out_dir = argv[1];  
+    epsilon = atof(argv[2]);
+    alpha = atof(argv[3]);
+
+    std::string out_param = out_dir + "/log.param";
+
+    // Write down the parameters of the run
+    ofstream param_file (out_param.c_str());
+    param_file << "Initial profile slope epsilon = " << epsilon << endl;
+    param_file << "Angular momentum parameter alpha = " << alpha << endl;
+    param_file << "Number of shells = " << nshells << endl;
+    param_file << "Initial average overdensity = " << delta_avg_init << endl;
+    param_file << "Stable DM fraction = " << stable_frac << endl;
+    param_file << "Minimum time step (if adaptive) = " << dt << endl;
+
     // Initialize the n-shell system and specify initial conditions
     nbody_system_emd gas(nshells, tau_emd, stable_frac);
 	initialize_gas(gas);
+
+    // Some sanity checks
+    param_file << "Sanity checks..." << endl;
+	param_file << "Simulating " << gas.size() << " shells..." << endl;
+    param_file << "Max radius = " << gas[nshells-1].r << "; M(nshells) = " << gas.get_mass_interior(nshells-1) << endl;
+    param_file << "Average overdensity = " << gas.get_delta_interior(ti, nshells-1) << "; should be = " << delta_avg_init << endl;
+
+    param_file.close();
+
 
     // Choose the integrator
     //leapfrog stepper(gas, ti, dt); 
@@ -141,7 +167,7 @@ int main(int argc, char **argv)
           std::ostringstream ss;
           //ss << floor(stepper.t); 
           ss << round(100.*gas[0].t/tau_emd)/100.;
-          out_name = "output_adaptive_10k/radial_profile_"+ss.str()+".dat"; 
+          out_name = out_dir+"/radial_profile_"+ss.str()+".dat"; 
           gas.output_radial_profile(out_name.c_str());
         }
 
