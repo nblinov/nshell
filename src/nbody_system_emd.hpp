@@ -117,7 +117,8 @@ class nbody_system_emd : public nbody_system
                                  "    " << get_mass_interior_to_r(r) << 
                                  "    " << get_delta_interior_to_r(t,r) <<
                                  "    " << get_velocity(r, dr) << 
-                                 "    " << get_velocity_squared(r, dr) << endl; 
+                                 "    " << get_velocity_squared(r, dr) <<
+                                 "    " << get_number_of_shells_in_bin(r, dr) << endl; 
         }
         radial_profile.close();
     }

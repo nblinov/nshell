@@ -22,7 +22,7 @@ using std::vector;
 #include "src/integrator.hpp"
 
 int sim_steps = 0;                  // Integral simulation time. Real time given by dt*sim_time
-const int nshells = 100;  // Number of shell sot simulate
+const int nshells = 10000;  // Number of shell sot simulate
 
 
 double epsilon = 0.5; // The initial perturbation has profile delta ~ (M/M_0)^-epsilon
@@ -30,16 +30,19 @@ double epsilon = 0.5; // The initial perturbation has profile delta ~ (M/M_0)^-e
 // Parameter that specifies angular momentum of the shells following https://arxiv.org/pdf/astro-ph/0008217.pdf
 double alpha = 0.01;  // if alpha < 1, then IC is such that shell is bound
 
-const double delta_avg_init = 1e-1; // Initial average overdensity of the whole shell config (out to radius rmax)
+double delta_avg_init = 1e-1; // Initial average overdensity of the whole shell config (out to radius rmax)
 const double Mtot = 1.; // Arbitrary normalization of shell masses
 const double rmax = 1.; // Arbitrary normalization of distances
 
 // Infer start time from initial overdensity
 const double dt = 0.00005; // Initial stepsize (may be modified in the integrator)
 const double tau_emd_over_ti = 100.;
-const double ti = sqrt((2./9.) * (1.+delta_avg_init) * (1. + 1./sqrt(tau_emd_over_ti)) * exp(-1./tau_emd_over_ti)); 
-const double tau_emd = tau_emd_over_ti*ti; // lifetime of the field responsible for EMD 
-const double sim_time_max = 50.*tau_emd;  // Length of the simulation
+
+// These need to be updated if delta_avg_init is changed 
+double ti = sqrt((2./9.) * (1.+delta_avg_init) * (1. + 1./sqrt(tau_emd_over_ti)) * exp(-1./tau_emd_over_ti)); 
+double tau_emd = tau_emd_over_ti*ti; // lifetime of the field responsible for EMD 
+double sim_time_max = 50.*tau_emd;  // Length of the simulation
+
 const double stable_frac = 0.0001; // fraction of DM that does NOT decay at the end of EMD
 
 vector<double> r_avg; // Radii for which to print out 1+delta(r)
@@ -123,6 +126,14 @@ int main(int argc, char **argv)
     epsilon = atof(argv[2]);
     alpha = atof(argv[3]);
 
+    // Set the initial overdensity, and re-compute times
+    if (argc > 3){
+      delta_avg_init = atof(argv[4]);
+      ti = sqrt((2./9.) * (1.+delta_avg_init) * (1. + 1./sqrt(tau_emd_over_ti)) * exp(-1./tau_emd_over_ti)); 
+      tau_emd = tau_emd_over_ti*ti; // lifetime of the field responsible for EMD 
+      sim_time_max = 50.*tau_emd;  // Length of the simulation
+    }
+
     std::string out_param = out_dir + "/log.param";
 
     // Write down the parameters of the run
@@ -136,11 +147,11 @@ int main(int argc, char **argv)
 
     // Initialize the n-shell system and specify initial conditions
     nbody_system_emd gas(nshells, tau_emd, stable_frac);
-	initialize_gas(gas);
+    initialize_gas(gas);
 
     // Some sanity checks
     param_file << "Sanity checks..." << endl;
-	param_file << "Simulating " << gas.size() << " shells..." << endl;
+    param_file << "Simulating " << gas.size() << " shells..." << endl;
     param_file << "Max radius = " << gas[nshells-1].r << "; M(nshells) = " << gas.get_mass_interior(nshells-1) << endl;
     param_file << "Average overdensity = " << gas.get_delta_interior(ti, nshells-1) << "; should be = " << delta_avg_init << endl;
 

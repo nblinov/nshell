@@ -189,6 +189,24 @@ class nbody_system
         return 0.;
     }
 
+    // Compute the number of shells in radial bin centered at r of width dr
+    size_t get_number_of_shells_in_bin(double r, double dr)
+    {
+      double r1 = r - dr/2;
+      double r2 = r + dr/2;
+
+      size_t nshells_in_bin = 0;
+      
+      for (size_t i = 0; i < gas.size(); ++i)
+      {
+        if (gas[i].r > r1 and gas[i].r <= r2)
+        {
+          nshells_in_bin++;
+        }
+      }
+      return nshells_in_bin;
+    }
+
     // Overdensity interior to shell n at time t
     inline double get_delta_interior(double t, size_t n)
     {
