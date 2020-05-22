@@ -44,7 +44,7 @@ class leapfrog : public integrator
             {
                 // Time-step takes us to negative r 
                 // Velocity changes sign when we go through the origin
-                if (gas[n].r + (gas[n].vr+gas[n].a*dt/2)*dt <= 0.)
+                if ((gas[n].r + (gas[n].vr+gas[n].a*dt/2)*dt) <= 0.)
                 {
                   gas[n].vr = -gas[n].vr;
                   gas[n].t += dt;
@@ -52,6 +52,7 @@ class leapfrog : public integrator
                 }
                 else
                 {
+
                   // First leapfrog step using old accelerations
                   gas[n].vr += gas[n].a*dt/2; // v(n) -> v(n+1/2) 
                   gas[n].r += gas[n].vr*dt; // x(n) -> x(n+1)

@@ -22,7 +22,7 @@ using std::vector;
 #include "src/integrator.hpp"
 
 int sim_steps = 0;                  // Integral simulation time. Real time given by dt*sim_time
-const int nshells = 10000;  // Number of shell sot simulate
+const int nshells = 100;  // Number of shell sot simulate
 
 
 double epsilon = 0.5; // The initial perturbation has profile delta ~ (M/M_0)^-epsilon
@@ -88,18 +88,18 @@ void initialize_gas(nbody_system &gas)
 
     }
 
-void output_shell_evolution(nbody_system &gas)
+void output_shell_evolution(nbody_system &gas, ofstream & shell_evolution_file)
 {
   size_t i;
-  cout << std::scientific; 
+  shell_evolution_file << std::scientific; 
   double t = gas[0].t;
 
-  cout << t << "    ";
+  shell_evolution_file << t << "    ";
 
   for (size_t m = 0; m < r_out.size(); m++)
   {
     i = r_out[m];
-    cout << gas[i].r << "    " << gas[i].vr << "    " << gas.get_delta_interior(t, i) << "    " << gas.get_mass_interior(i) << "    ";
+    shell_evolution_file << gas[i].r << "    " << gas[i].vr << "    " << gas.get_delta_interior(t, i) << "    " << gas.get_mass_interior(i) << "    ";
 
   }
   //cout << get_total_energy() << "    ";
@@ -108,17 +108,27 @@ void output_shell_evolution(nbody_system &gas)
   {
     i = r_out[m];
     t_dyn = gas[i].t_dyn;
-    cout << t_dyn/dt << "    ";
+    shell_evolution_file << t_dyn/dt << "    ";
   }
 
-  cout << endl;
+  shell_evolution_file << endl;
+}
+
+
+void output_energy_evolution(nbody_system &gas, ofstream & energy_file)
+{
+  energy_file << std::scientific; 
+  energy_file << gas[0].t/tau_emd << "    " << gas.get_total_kinetic_energy() 
+                                  << "    " << gas.get_total_potential_energy() 
+                                  << "    " << gas.get_total_energy();
+  energy_file << endl;
 }
 
 int main(int argc, char **argv)
 {
 
-    if (argc < 3){
-      cout << "Need three arguments:  output directory, initial profile slope epsilon and angular momentum parameter alpha!" << endl;
+    if (argc <= 4){
+      cout << "Need four arguments:  output directory, initial profile slope epsilon, angular momentum parameter alpha, initial average overdensity!" << endl;
       exit(0);
     }
 
@@ -127,7 +137,7 @@ int main(int argc, char **argv)
     alpha = atof(argv[3]);
 
     // Set the initial overdensity, and re-compute times
-    if (argc > 3){
+    if (argc > 4){
       delta_avg_init = atof(argv[4]);
       ti = sqrt((2./9.) * (1.+delta_avg_init) * (1. + 1./sqrt(tau_emd_over_ti)) * exp(-1./tau_emd_over_ti)); 
       tau_emd = tau_emd_over_ti*ti; // lifetime of the field responsible for EMD 
@@ -135,6 +145,11 @@ int main(int argc, char **argv)
     }
 
     std::string out_param = out_dir + "/log.param";
+    std::string out_shell_evolution = out_dir + "/select_shell_evolution.dat";
+    std::string out_energy_evolution = out_dir + "/energy_evolution.dat";
+
+    ofstream shell_evolution_file (out_shell_evolution.c_str());
+    ofstream energy_evolution_file (out_energy_evolution.c_str());
 
     // Write down the parameters of the run
     ofstream param_file (out_param.c_str());
@@ -168,7 +183,7 @@ int main(int argc, char **argv)
         stepper.update();
 
         // Output a few individual shell properties
-        if ((sim_steps%200 == 0)) output_shell_evolution(gas);
+        if ((sim_steps%200 == 0)) output_shell_evolution(gas, shell_evolution_file);
 
         // Output binned density profile of the whole system
         //if ((sim_steps%100000 == 0)) 
@@ -180,9 +195,17 @@ int main(int argc, char **argv)
           ss << round(100.*gas[0].t/tau_emd)/100.;
           out_name = out_dir+"/radial_profile_"+ss.str()+".dat"; 
           gas.output_radial_profile(out_name.c_str());
+
+          out_name = out_dir+"/shell_state_"+ss.str()+".dat"; 
+          gas.output_shell_state(out_name.c_str());
+
+          output_energy_evolution(gas, energy_evolution_file);
         }
 
         sim_steps++;
 
     }
+    shell_evolution_file.close();
+    energy_evolution_file.close();
+
 }

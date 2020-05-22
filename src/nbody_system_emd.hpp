@@ -54,7 +54,6 @@ class nbody_system_emd : public nbody_system
       return (4.*PI/3.)*pow(r,3.)*get_density_bg_total_matter(t); 
     }
 
-
     // Mass interior to radius r
     double get_mass_interior_to_r(double r)
     {
@@ -101,6 +100,11 @@ class nbody_system_emd : public nbody_system
         return a;
     }
 
+    inline double get_shell_potential_energy(size_t n)
+    {
+      double t = gas[0].t;
+      return  - get_mass_interior(n)/sqrt(gas[n].r*gas[n].r + force_softening_sq) + (4.*PI/3.)*get_density_bg_rad(t)*gas[n].r*gas[n].r;
+    }
 
     void output_radial_profile(const char * file_name)
     {
@@ -118,8 +122,20 @@ class nbody_system_emd : public nbody_system
                                  "    " << get_delta_interior_to_r(t,r) <<
                                  "    " << get_velocity(r, dr) << 
                                  "    " << get_velocity_squared(r, dr) <<
-                                 "    " << get_number_of_shells_in_bin(r, dr) << endl; 
+                                 "    " << get_number_of_shells_in_bin(r, dr) <<  
+                                 "    " << get_number_of_shells_interior_to_r(r) << endl; 
         }
         radial_profile.close();
     }
+
+    void output_shell_state(const char * file_name)
+    {
+        ofstream shell_state (file_name);
+        for (size_t i = 0; i < gas.size(); i++)
+        {
+          shell_state << gas[i].r << "    " << gas[i].vr << "    " << gas[i].a << "    " << gas[i].t_dyn << endl; 
+        }
+        shell_state.close();
+    }
+
 };

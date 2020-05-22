@@ -207,6 +207,21 @@ class nbody_system
       return nshells_in_bin;
     }
 
+    // Compute the number of shells interior to r 
+    size_t get_number_of_shells_interior_to_r(double r)
+    {
+      size_t nshells_interior = 0;
+      
+      for (size_t i = 0; i < gas.size(); ++i)
+      {
+        if (gas[i].r < r)
+        {
+          nshells_interior++;
+        }
+      }
+      return nshells_interior;
+    }
+
     // Overdensity interior to shell n at time t
     inline double get_delta_interior(double t, size_t n)
     {
@@ -219,9 +234,37 @@ class nbody_system
       return get_mass_interior_to_r(r)/get_mass_interior_bg(t, r) - 1.;
     }
 
+    inline double get_shell_kinetic_energy(size_t n)
+    {
+      return 0.5*gas[n].vr*gas[n].vr + 0.5*gas[n].l*gas[n].l/(gas[n].r*gas[n].r);
+    }
+
+    virtual inline double get_shell_potential_energy(size_t n)
+    {
+      return  - get_mass_interior(n)/sqrt(gas[n].r*gas[n].r + force_softening_sq);
+    }
+
     inline double get_shell_energy(size_t n)
     {
-      return 0.5*gas[n].vr*gas[n].vr + gas[n].l*gas[n].l/(gas[n].r*gas[n].r) - get_mass_interior(n)/sqrt(gas[n].r*gas[n].r + force_softening_sq); //+ 0.5*gas[n].r*gas[n].r;//;
+      return  get_shell_kinetic_energy(n) + get_shell_potential_energy(n); 
+    }
+    
+    double get_total_kinetic_energy(){
+      double total_energy;
+      total_energy = 0.;
+      for (size_t i = 0; i < gas.size(); i++)
+        total_energy += get_shell_kinetic_energy(i);
+
+      return total_energy;
+    }
+
+    double get_total_potential_energy(){
+      double total_energy;
+      total_energy = 0.;
+      for (size_t i = 0; i < gas.size(); i++)
+        total_energy += get_shell_potential_energy(i);
+
+      return total_energy;
     }
 
     double get_total_energy()
