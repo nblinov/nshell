@@ -117,11 +117,22 @@ class nbody_system_emd : public nbody_system
         for (size_t i = 0; i < nbins; i++)
         {
           r = (i+1)*dr;
+
+          double v, v2, h, delta, velocity_factor;
+          v = get_velocity(r, dr);
+          v2 = get_velocity_squared(r, dr);
+          delta = get_delta_interior_to_r(t,r);
+          h = sqrt((8.*PI/3.)*get_density_bg(t));
+
+          // This is a dimensionless combination from Albert's cut-off scale derivation
+          velocity_factor = (3./h)*(v/r)/pow(1.+ delta,1./3.);
+
           radial_profile << r << "    " << get_density(r, dr)/get_density_bg_total_matter(t) << 
                                  "    " << get_mass_interior_to_r(r) << 
-                                 "    " << get_delta_interior_to_r(t,r) <<
-                                 "    " << get_velocity(r, dr) << 
-                                 "    " << get_velocity_squared(r, dr) <<
+                                 "    " << delta <<
+                                 "    " << v << 
+                                 "    " << v2 <<
+                                 "    " << velocity_factor <<
                                  "    " << get_number_of_shells_in_bin(r, dr) <<  
                                  "    " << get_number_of_shells_interior_to_r(r) << endl; 
         }
