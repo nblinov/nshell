@@ -144,6 +144,9 @@ int main(int argc, char **argv)
       sim_time_max = 50.*tau_emd;  // Length of the simulation
     }
 
+    //cout << "tau_emd = " << tau_emd << endl;
+    //exit(0);
+
     std::string out_param = out_dir + "/log.param";
     std::string out_shell_evolution = out_dir + "/select_shell_evolution.dat";
     std::string out_energy_evolution = out_dir + "/energy_evolution.dat";

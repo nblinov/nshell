@@ -125,7 +125,7 @@ class nbody_system_emd : public nbody_system
           h = sqrt((8.*PI/3.)*get_density_bg(t));
 
           // This is a dimensionless combination from Albert's cut-off scale derivation
-          velocity_factor = (3./h)*(v/r)/pow(1.+ delta,1./3.);
+          velocity_factor = (3.pow(1.+ delta,1./3.))*( (v/r)/h - 1.);
 
           radial_profile << r << "    " << get_density(r, dr)/get_density_bg_total_matter(t) << 
                                  "    " << get_mass_interior_to_r(r) << 
