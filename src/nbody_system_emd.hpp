@@ -94,7 +94,6 @@ class nbody_system_emd : public nbody_system
 
         mass_interior = get_mass_interior(n);
         gas[n].t_dyn = sqrt(5.*pow(r,3.)/(2.*mass_interior));
-        //cout << "t_dyn = " << gas[n].t_dyn << "   "  << r << "   " << mass_interior << endl;
 
         a += + pow(gas[n].l,2.)/pow(r,3.) - mass_interior*r/pow(r*r+force_softening_sq,3./2.) - (8.*PI/3.)*get_density_bg_rad(t)*r;
         return a;
